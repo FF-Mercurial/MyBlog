@@ -1,0 +1,11 @@
+extends template0
+
+block content0
+  div
+    div#post
+      h2#post-title #{post.title}
+      div#post-tags tags: 
+        each tag in post.tags
+          a(href='/posts/0/' + tag) #{tag} 
+      div#post-content !{post.content}
+      div#post-pubDate pub on #{post.pubDate.toDateString()}

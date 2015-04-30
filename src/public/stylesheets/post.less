@@ -1,0 +1,47 @@
+@import 'utils';
+@import 'colors';
+
+#post {
+    padding: 0 60px;
+    margin-bottom: 40px;
+}
+
+#post-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#post-tags {
+    margin-bottom: 40px;
+}
+
+#post-content {
+    margin-bottom: 40px;
+    
+    ul {
+        margin-bottom: 20px;
+        padding-left: 2rem;
+    }
+
+    p {
+        margin-bottom: 20px;
+    }
+
+    code {
+        font-family: monospace;
+        font-weight: 100;
+        font-size: 16px;
+        border: @gray-line;
+    }
+
+    pre {
+        margin-bottom: 20px;
+        border-left: solid 5px @line-gray;
+        border-top: solid 2px @line-gray;
+
+        code {
+            padding: 10px 20px;
+            background: none;
+        }
+    }
+}

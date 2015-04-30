@@ -15,7 +15,11 @@
     "gulp": "^3.8.11",
     "gulp-less": "^3.0.3",
     "gulp-livescript": "^2.3.0",
+    "highlight.js": "^8.5.0",
     "jade": "~1.9.2",
+    "markdown": "^0.5.0",
+    "marked": "^0.3.3",
+    "mongodb": "^2.0.28",
     "morgan": "~1.5.1",
     "serve-favicon": "~2.2.0"
   }

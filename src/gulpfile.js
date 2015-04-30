@@ -14,7 +14,7 @@
         p.kill();
         log('restarted.');
       }
-      p = cp.spawn('node', ['../bin/run.js'], {
+      p = cp.spawn('sudo', ['node', '../bin/run.js'], {
         cwd: '../bin'
       });
       p.stdout.on('data', function(chunk){
@@ -43,17 +43,26 @@
   function compileLs(cb){
     compile('ls', ls(), cb);
   }
+  function copy(extension, cb){
+    gulp.src('**/*.' + extension).pipe(gulp.dest('../bin')).on('end', cb);
+  }
   function copyJade(cb){
-    cp.exec('cp -r views ../bin', cb);
+    copy('jade', cb);
+  }
+  function copyCss(cb){
+    copy('css', cb);
+  }
+  function copyJs(cb){
+    copy('js', cb);
   }
   function build(cb){
-    async.parallel([compileLess, compileLs, copyJade], function(){
+    async.parallel([compileLess, compileLs, copyJade, copyCss, copyJs], function(){
       log('builded.');
       cb();
     });
   }
   function clear(cb){
-    cp.exec('rm -r ../bin/*', function(){
+    cp.exec('rm -r ../bin', function(){
       log('cleared');
       cb();
     });
@@ -63,8 +72,8 @@
   }
   function watch(cb){
     var _paths, paths;
-    _paths = ['public/**/*.less', 'public/**/*.ls'];
-    paths = ['routes/**/*.ls', 'app.ls', 'run.ls'];
+    _paths = ['public/**/*.less', 'public/**/*.ls', 'views/**/*.jade'];
+    paths = ['routes/**/*.ls', 'utils/**/*.ls', 'app.ls', 'run.ls'];
     _paths.forEach(function(path){
       gulp.watch(path, function(){
         rebuild();

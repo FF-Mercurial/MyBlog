@@ -1,0 +1,38 @@
+@import 'colors';
+@import 'fonts';
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: @english-font-bold;
+    font-size: 18px;
+    color: @font-black;
+    letter-spacing: 0.1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: lighter;
+}
+
+a {
+    color: @ff-blue;
+    text-decoration: none;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.cf:after {
+    display: block;
+    content: '';
+    clear: both;
+}
