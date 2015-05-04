@@ -1,8 +1,10 @@
 require! {
     express
     marked
+    '../utils/mail'
     '../utils/config'
     '../utils/db'
+    '../utils/mail'
 }
 
 router = express.Router!
@@ -30,34 +32,47 @@ router.get '/post/:id', (req, res, next)!->
     db.getPost id, (err, post)!->
         if err
             e5 res
+        else if post
+            post.content = md post.content
+            res.render 'post', post: post
         else
-            if post
-                post.content = md post.content
-                res.render 'post', post: post
-            else
-                next!
+            next!
 
 router.post '/s-push-posts', checkKey, (req, res)!->
     posts = req.body.posts
-    db.pushPosts posts, (err)!->
-        if err
-            e5 res
-        else
-            res.end!
+    date = new Date
+    db.pushPosts posts, date, (err)!-> if err then e5 res else ok res
 
-router.post '/s-fetch-posts', checkKey, (req, res)!->
-    db.getPosts null, (err, posts)!->
-        if err
+router.post '/s-fetch-posts', (req, res)!->
+    db.getPosts null, (err, posts)!-> if err then e5 res else res.json posts
+
+router.post '/s-comment', (req, res)!->
+    id = req.body.id
+    name = req.body.name
+    email = req.body.email
+    replying = req.body.replying
+    comment = req.body.comment
+    date = new Date
+    db.comment id, name, email, replying, comment, date, (err, email)!->
+        if err 
             e5 res
         else
-            res.json posts
+            ok res
+            if email
+                subject = 'someone replied you on FF_Mercurial\'s Blog'
+                html = "<a href='http://#{config.host}/post/#{id}'>see here</a>"
+                mail.send email, subject, html
+
+router.get '/s-mail/:addr/:subject/:html', (req, res)!->
+    addr = req.params.addr
+    subject = req.params.subject
+    html = req.params.html
+    mail.send addr, subject, html
+    ok res
 
 !function checkKey req, res, next
     key = req.body.key
-    if key != config.key
-        e4 res
-    else
-        next!
+    if key != config.key then e4 res else next!
 
 !function postsHandler query, req, res
     postsPerPage = config.postsPerPage
@@ -71,8 +86,7 @@ router.post '/s-fetch-posts', checkKey, (req, res)!->
         if err
             log res, JSON.stringify(err)
         else
-            posts.forEach (post)!->
-                post.summary = md post.summary
+            posts.forEach (post)!-> post.summary = md post.summary
             db.getTags (err, tags)!->
                 if err
                     log res, JSON.stringify(err)
@@ -89,10 +103,13 @@ router.post '/s-fetch-posts', checkKey, (req, res)!->
     res.end!
 
 !function e4 res
-    e 4, res
+    res.json msg: '400'
 
 !function e5 res
-    e 5, res
+    res.json msg: '500'
+
+!function ok res
+    res.json msg: 'ok'
 
 !function log res, msg
     res.render 'log', msg: msg

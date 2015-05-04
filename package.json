@@ -21,6 +21,9 @@
     "marked": "^0.3.3",
     "mongodb": "^2.0.28",
     "morgan": "~1.5.1",
-    "serve-favicon": "~2.2.0"
+    "nodemailer": "^0.7.1",
+    "normalize.css": "^3.0.3",
+    "serve-favicon": "~2.2.0",
+    "smtp-protocol": "^2.4.6"
   }
 }

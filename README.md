@@ -59,8 +59,8 @@
     - content: String
     - pubDate: Date
     - comments:
-        - floor: Number
         - name: String
         - email: String
         - content: String
         - replying: Number
+        - date: Date

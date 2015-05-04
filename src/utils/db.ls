@@ -7,6 +7,14 @@ require! {
 url = config.mongoUrl
 _db = null
 
+function union a, b
+    res = {}
+    for key, value of a
+        res[key] = a[key]
+    for key, value of b
+        res[key] = b[key]
+    return res
+
 !function connect _cb, cb
     if _db
         cb _db
@@ -18,7 +26,7 @@ _db = null
                 _db := db
                 cb db
 
-!function pushPosts posts, cb
+!function pushPosts posts, date, cb
     connect cb, (db)!->
         Post = db.collection 'posts'
         tasks = []
@@ -32,12 +40,13 @@ _db = null
                         Post.update {
                             _id: mongodb.ObjectId(docs[0]._id)
                         }, {
-                            $set: post
+                            $set: union post, updateDate: date
                         }, (err, res)!->
                             cb err
                     else
                         post.comments = []
-                        post.pubDate = new Date!
+                        post.pubDate = date
+                        post.updateDate = date
                         Post.insert post, (err)!-> cb err
         async.series tasks, (err)!-> cb err
             
@@ -82,8 +91,33 @@ _db = null
                 post = posts[0]
                 cb null, post
 
+!function comment id, name, email, replying, content, date, cb
+    connect cb, (db)!->
+        Post = db.collection 'posts'
+        Post.update _id: mongodb.ObjectId(id), {
+            $push:
+                comments:
+                    name: name
+                    email: email
+                    replying: replying
+                    content: content
+                    date: date
+        }, (err)!->
+            if err
+                cb err
+            else
+                Post.find _id: mongodb.ObjectId(id) .toArray (err, posts)!->
+                    if err
+                        cb err
+                    else
+                        post = posts[0]
+                        comment = post and post.comments[replying]
+                        replyingEmail = comment and comment.email
+                        cb null, replyingEmail
+
 module.exports =
     getPost: getPost
     getPosts: getPosts
     getTags: getTags
     pushPosts: pushPosts
+    comment: comment
