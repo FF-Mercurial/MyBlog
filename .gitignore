@@ -1,5 +1,6 @@
 node_modules/
 bin/
+src/agent/posts
 README.html
 README.pdf
 config.json

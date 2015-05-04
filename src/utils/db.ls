@@ -9,22 +9,15 @@ _db = null
 
 function union a, b
     res = {}
-    for key, value of a
-        res[key] = a[key]
-    for key, value of b
-        res[key] = b[key]
+    for key, value of a then res[key] = a[key]
+    for key, value of b then res[key] = b[key]
     return res
 
 !function connect _cb, cb
     if _db
         cb _db
     else
-        mongodb.MongoClient.connect url, (err, db)!->
-            if err
-                _cb err
-            else
-                _db := db
-                cb db
+        mongodb.MongoClient.connect url, (err, db)!-> if err then _cb err else cb(_db := db)
 
 !function pushPosts posts, date, cb
     connect cb, (db)!->
@@ -41,8 +34,7 @@ function union a, b
                             _id: mongodb.ObjectId(docs[0]._id)
                         }, {
                             $set: union post, updateDate: date
-                        }, (err, res)!->
-                            cb err
+                        }, (err, res)!-> cb err
                     else
                         post.comments = []
                         post.pubDate = date
@@ -54,16 +46,10 @@ function union a, b
     connect cb, (db)!->
         Post = db.collection 'posts'
         _query = {}
-        if query.tag
-            _query.tags = $in: [query.tag]
+        query and query.tag and _query.tags = $in: [query.tag]
         pipeline = Post.find _query .sort pubDate: -1
-        if query.range
-            pipeline.skip query.range.from .limit query.range.to
-        pipeline.toArray (err, posts)!->
-            if (err)
-                cb err
-            else
-                cb null, posts
+        query and query.range and pipeline.skip query.range.from .limit query.range.to
+        pipeline.toArray (err, posts)!-> if err then cb err else cb null, posts
 
 !function getTags cb
     connect cb, (db)!->
@@ -73,23 +59,13 @@ function union a, b
                 cb err
             else
                 tags = {}
-                posts.forEach (post)!->
-                    post.tags.forEach (name)!->
-                        if not tags[name]
-                            tags[name] = 1
-                        else
-                            tags[name]++
+                posts.forEach (post)!-> post.tags.forEach (name)!-> if tags[name] then tags[name]++ else tags[name] = 1
                 cb null, tags
 
 !function getPost id, cb
     connect cb, (db)!->
         Post = db.collection 'posts'
-        Post.find _id: mongodb.ObjectId(id), .toArray (err, posts)!->
-            if err
-                cb err
-            else
-                post = posts[0]
-                cb null, post
+        Post.find _id: mongodb.ObjectId(id), .toArray (err, posts)!-> cb err, posts[0]
 
 !function comment id, name, email, replying, content, date, cb
     connect cb, (db)!->

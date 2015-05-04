@@ -2,6 +2,7 @@
 
 require! {
     fs
+    path
     request
     async
     './post'
@@ -22,11 +23,10 @@ catch
     exit 'bad config.json.'
 
 key = config.key
-server = config.server
-if not key
-    exit 'no key.'
-if not server
-    exit 'no server.'
+server = 'http://' + config.server
+
+key or exit 'no key.'
+server or exit 'no server.'
 
 switch option
     case 'fetch'
@@ -39,8 +39,7 @@ switch option
 !function push
     posts = []
     tasks = []
-    if files.length == 0
-        exit 'no posts to push.'
+    files.length or exit 'no posts to push.'
     files.forEach (file)!->
         tasks.push (cb)!->
             fs.readFile file, encoding: 'utf-8', (err, fileContent)!->
@@ -66,10 +65,7 @@ switch option
                 if err
                     exit err
                 else
-                    if res.statusCode == 200
-                        ok!
-                    else
-                        exit 'opppppps!'
+                    if res.statusCode == 200 then ok! else ops!
     
 !function fetch
     request {
@@ -82,24 +78,24 @@ switch option
         if err
             exit err
         else
+            try
+                fs.mkdirSync 'posts'
+            catch
+                'pass'
             posts = body
             tasks = []
             posts.forEach (postObject)!->
                 tasks.push (cb)!->
                     postStr = post.encode postObject
-                    fs.writeFile postObject.title + '.md', postStr, encoding: 'utf-8', (err)!-> cb err
-            async.parallel tasks, (err)!->
-                if err
-                    exit err
-                else
-                    ok!
+                    fs.writeFile path.join('posts', postObject.title + '.md'), postStr, encoding: 'utf-8', (err)!-> cb err
+            async.parallel tasks, (err)!-> !!err ? exit err : ok!
 
-!function log msg
-    console.log msg
+!function log msg then console.log msg
 
 !function exit msg
     log msg
     process.exit 1
 
-!function ok
-    exit 'ok.'
+!function ok then exit 'ok.'
+
+!function ops then exit 'oooooooops!'
