@@ -1,0 +1,81 @@
+@commonPath: '../commonCss';
+@import '@{commonPath}/utils';
+@import '@{commonPath}/colors';
+
+#post-block {
+    padding: 30px 0;
+    margin: 0 auto;
+    width: 800px;
+}
+
+#post {
+    padding-bottom: 30px;
+    margin-bottom: 40px;
+    border-bottom: @gray-line;
+}
+
+#post-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#post-content {
+    margin-top: 40px;
+    
+    ul {
+        margin-bottom: 20px;
+        padding-left: 2rem;
+    }
+
+    p {
+        margin-bottom: 20px;
+    }
+
+    code {
+        font-family: monospace;
+        font-weight: 100;
+        font-size: 16px;
+        border: @gray-line;
+    }
+
+    pre {
+        margin-bottom: 20px;
+        border-left: solid 5px @line-gray;
+        border-top: solid 2px @line-gray;
+
+        code {
+            padding: 10px 20px;
+            background: none;
+        }
+    }
+}
+
+#post-tags, #post-pubDate, #post-modDate {
+    margin-bottom: 10px;
+}
+
+#comment-form {
+    width: 40%;
+    margin-bottom: 20px;
+}
+
+#comment-list {
+    margin-bottom: 20px;
+}
+
+.comment-item {
+    padding: 20px;
+    border-bottom: @gray-line;
+}
+
+.comment-header, .comment-footer {
+    color: @font-gray;
+}
+
+.comment-content {
+    margin: 10px 0;
+}
+
+.reply-anchor {
+    color: @ff-blue;
+}

@@ -1,0 +1,10 @@
+{
+    "host": "localhost",
+    "key": "aKeyForPushingPosts",
+    "mongoPort": 27017,
+    "mongoName": "MyBlog",
+    "postsPerPage": 10,
+    "mailHost": "smtp.163.com",
+    "mailUser": "username@163.com",
+    "mailPass": "smtpPass"
+}
