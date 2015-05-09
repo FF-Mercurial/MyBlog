@@ -7,4 +7,5 @@
     "mailHost": "smtp.163.com",
     "mailUser": "username@163.com",
     "mailPass": "smtpPass"
+    "myMailUser": "username@qq.com"
 }
